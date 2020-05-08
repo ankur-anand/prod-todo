@@ -1,4 +1,4 @@
-module github.com/ankur-anand/talk-observability
+module github.com/ankur-anand/prod-app
 
 go 1.14
 

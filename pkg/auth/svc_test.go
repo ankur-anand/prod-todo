@@ -7,7 +7,7 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/ankur-anand/talk-observability/pkg/auth"
+	"github.com/ankur-anand/prod-app/pkg/auth"
 )
 
 type dummyRepo struct {
