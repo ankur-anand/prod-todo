@@ -64,6 +64,7 @@ func (log *Logger) HTTPRequest(message string, statusCode int, duration time.Dur
 	log.sampled.Error(message, String("method", r.Method), String("url", r.URL.String()), Int("status", statusCode), Duration("duration", duration))
 }
 
+// Sync should be called before application exit.
 func (log *Logger) Sync() {
 	if log.isDev {
 		_ = log.sampled.Sync()
