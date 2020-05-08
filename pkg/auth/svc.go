@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -103,17 +104,18 @@ func (as Service) IsDuplicateRegistration(ctx context.Context, email string) (bo
 }
 
 // StoreUser stores the user inside the storage
-func (as Service) StoreUser(ctx context.Context, email, password,
-	username string) (int, error) {
-	email = normalize(email)
-	encryptedPass, err := bcrypt.GenerateFromPassword([]byte(password),
+func (as Service) StoreUser(ctx context.Context, model UserModel) (int, error) {
+	email := normalize(model.Email)
+	encryptedPass, err := bcrypt.GenerateFromPassword([]byte(model.Password),
 		bcrypt.DefaultCost)
 	if err != nil {
 		return 0, err
 	}
 	return as.repo.Store(ctx, UserModel{
-		Email:    email,
-		Password: string(encryptedPass),
-		Username: username,
+		ID:        uuid.New(),
+		Email:     email,
+		Password:  string(encryptedPass),
+		FirstName: model.FirstName,
+		LastName:  model.LastName,
 	})
 }

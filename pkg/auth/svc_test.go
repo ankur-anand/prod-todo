@@ -5,6 +5,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
+
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/ankur-anand/prod-app/pkg/auth"
@@ -114,7 +116,7 @@ func TestService_IsDuplicateRegistration(t *testing.T) {
 	dummyR := dummyRepo{}
 	dummyR.returnFunc = func() auth.UserModel {
 		return auth.UserModel{
-			ID:       0,
+			ID:       uuid.New(),
 			Email:    "ankuranand@example.com",
 			Password: "garbage",
 			Username: "ankuranand",
@@ -143,7 +145,7 @@ func TestService_IsCredentialValid(t *testing.T) {
 	dummyR := dummyRepo{}
 	dummyR.returnFunc = func() auth.UserModel {
 		return auth.UserModel{
-			ID:       0,
+			ID:       uuid.New(),
 			Email:    "ankuranand@example.com",
 			Password: string(encryptedPass),
 			Username: "ankuranand",
@@ -177,7 +179,13 @@ func TestService_StoreUser(t *testing.T) {
 	}
 
 	as := auth.NewService(dummyR)
-	_, err = as.StoreUser(context.Background(), "ankuranand@example.com", password, "ankuranand")
+	usr := auth.UserModel{
+		Email:     "ankuranand@example.com",
+		Password:  password,
+		FirstName: "Ankur",
+		LastName:  "Anand",
+	}
+	_, err = as.StoreUser(context.Background(), usr)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -185,7 +193,7 @@ func TestService_StoreUser(t *testing.T) {
 	select {
 	case user := <-userReceived:
 		close(userReceived)
-		ok := user.Email == "ankuranand@example.com" && user.Username == "ankuranand" && password != user.Password
+		ok := user.Email == "ankuranand@example.com" && user.FirstName == "Ankur" && password != user.Password
 		if !ok {
 			t.Errorf("StoreUser failed to received the expected user model")
 		}
