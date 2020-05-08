@@ -41,6 +41,7 @@ func NewService(repo Repository) Service {
 
 // IsValidEmail checks if an email is valid or not
 func (as Service) IsValidEmail(email string) bool {
+	email = normalize(email)
 	// email addresses have a practical limit of 254 bytes
 	if len(email) > 254 || !rxEmail.MatchString(email) {
 		return false
@@ -65,6 +66,7 @@ func (as Service) IsValidPassword(password string) bool {
 // IsCredentialValid checks if the Credential is ok
 func (as Service) IsCredentialValid(ctx context.Context, email string,
 	password string) (bool, error) {
+	email = normalize(email)
 	user, err := as.repo.FindByEmail(ctx, email)
 	if err != nil {
 		return false, err
@@ -88,6 +90,7 @@ func (as Service) IsCredentialValid(ctx context.Context, email string,
 // IsDuplicateRegistration checks if the user is already registered
 func (as Service) IsDuplicateRegistration(ctx context.Context, email string) (bool,
 	error) {
+	email = normalize(email)
 	user, err := as.repo.FindByEmail(ctx, email)
 	if err != nil {
 		return false, err
@@ -102,6 +105,7 @@ func (as Service) IsDuplicateRegistration(ctx context.Context, email string) (bo
 // StoreUser stores the user inside the storage
 func (as Service) StoreUser(ctx context.Context, email, password,
 	username string) (int, error) {
+	email = normalize(email)
 	encryptedPass, err := bcrypt.GenerateFromPassword([]byte(password),
 		bcrypt.DefaultCost)
 	if err != nil {
