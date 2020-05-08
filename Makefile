@@ -10,7 +10,7 @@ test:
 
 # get the html coverage
 html-coverage:
-	go tool cover -html=$(COVERAGE_DIR)/combined.txt
+	@go tool cover -html=$(COVERAGE_DIR)/combined.txt
 
 # Run all lint
 .PHONY: lint
