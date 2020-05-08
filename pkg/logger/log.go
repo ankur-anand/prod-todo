@@ -30,22 +30,27 @@ func Int(key string, val int) Field {
 	return Field{Key: key, Type: zapcore.Int64Type, Integer: int64(val)}
 }
 
+// Duration constructs a string field with the given key and time value
 func Duration(key string, val time.Duration) Field {
 	return Field{Key: key, Type: zapcore.DurationType, Integer: int64(val)}
 }
 
+// Info logs info level message
 func (log *Logger) Info(msg string, fields ...Field) {
 	log.sampled.Info(msg, fields...)
 }
 
+// Error logs Error level message
 func (log *Logger) Error(msg string, field ...Field) {
 	log.nonSampled.Error(msg, field...)
 }
 
+// Panic logs panic level message
 func (log *Logger) Panic(msg string, field ...Field) {
 	log.nonSampled.Panic(msg, field...)
 }
 
+// Fatal logs fatal level message
 func (log *Logger) Fatal(msg string, field ...Field) {
 	log.nonSampled.Fatal(msg, field...)
 }
@@ -61,11 +66,11 @@ func (log *Logger) HTTPRequest(message string, statusCode int, duration time.Dur
 
 func (log *Logger) Sync() {
 	if log.isDev {
-		log.sampled.Sync()
+		_ = log.sampled.Sync()
 		return
 	}
-	log.sampled.Sync()
-	log.nonSampled.Sync()
+	_ = log.sampled.Sync()
+	_ = log.nonSampled.Sync()
 }
 
 // NewProduction returns a new Production ready Logger
