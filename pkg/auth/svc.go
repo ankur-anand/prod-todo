@@ -12,8 +12,8 @@ var (
 	rxEmail = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 )
 
-// Normalize normalizes email address.
-func Normalize(email string) string {
+// normalize normalizes email address.
+func normalize(email string) string {
 	// Trim whitespaces.
 	email = strings.TrimSpace(email)
 
@@ -31,6 +31,8 @@ type Service struct {
 	repo Repository
 }
 
+// NewService returns a new AUTH Service initialized with
+// a concrete repo implementation
 func NewService(repo Repository) Service {
 	return Service{
 		repo: repo,
@@ -47,13 +49,11 @@ func (as Service) IsValidEmail(email string) bool {
 	// {64}@{255}
 	at := strings.LastIndex(email, "@")
 	user := email[:at]
-	if len(user) > 64 {
-		return false
-	}
-
-	return true
+	isLenOk := len(user) > 64
+	return !isLenOk
 }
 
+// IsValidPassword validate if the password is valid or not
 func (as Service) IsValidPassword(password string) bool {
 	// min 8 character only and less than 254
 	if len(strings.TrimSpace(password)) > 254 || len(strings.TrimSpace(password)) < 8 {
@@ -62,6 +62,7 @@ func (as Service) IsValidPassword(password string) bool {
 	return true
 }
 
+// IsCredentialValid checks if the Credential is ok
 func (as Service) IsCredentialValid(ctx context.Context, email string,
 	password string) (bool, error) {
 	user, err := as.repo.FindByEmail(ctx, email)
@@ -84,6 +85,7 @@ func (as Service) IsCredentialValid(ctx context.Context, email string,
 	return true, nil
 }
 
+// IsDuplicateRegistration checks if the user is already registered
 func (as Service) IsDuplicateRegistration(ctx context.Context, email string) (bool,
 	error) {
 	user, err := as.repo.FindByEmail(ctx, email)
@@ -97,6 +99,7 @@ func (as Service) IsDuplicateRegistration(ctx context.Context, email string) (bo
 	return true, nil
 }
 
+// StoreUser stores the user inside the storage
 func (as Service) StoreUser(ctx context.Context, email, password,
 	username string) (int, error) {
 	encryptedPass, err := bcrypt.GenerateFromPassword([]byte(password),
