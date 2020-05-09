@@ -14,7 +14,7 @@ import (
 
 type dummyRepo struct {
 	returnFunc  func() auth.UserModel
-	returnStore func(auth.UserModel) (int, error)
+	returnStore func(auth.UserModel) (uuid.UUID, error)
 }
 
 func (d dummyRepo) Find(ctx context.Context, id uuid.UUID) (auth.UserModel, error) {
@@ -34,7 +34,7 @@ func (d dummyRepo) Update(ctx context.Context, user auth.UserModel) error {
 	panic("implement me")
 }
 
-func (d dummyRepo) Store(ctx context.Context, user auth.UserModel) (int, error) {
+func (d dummyRepo) Store(ctx context.Context, user auth.UserModel) (uuid.UUID, error) {
 	return d.returnStore(user)
 }
 
@@ -123,12 +123,12 @@ func TestService_IsDuplicateRegistration(t *testing.T) {
 		}
 	}
 	as := auth.NewService(dummyR)
-	ok, _ := as.IsDuplicateRegistration(context.Background(), "ankuranand@example.com")
+	ok, _ := as.IsDuplicateRegistration(context.Background(), "anKuranand@example.com")
 	if !ok {
 		t.Errorf("duplicate Registration validation failed for %s", "ankuranand@example.com")
 	}
 
-	ok, _ = as.IsDuplicateRegistration(context.Background(), "ankur@example.com")
+	ok, _ = as.IsDuplicateRegistration(context.Background(), "anKur@example.com")
 	if ok {
 		t.Errorf("duplicate Registration validation failed for %s", "ankur@example.com")
 	}
@@ -171,16 +171,16 @@ func TestService_StoreUser(t *testing.T) {
 	dummyR := dummyRepo{}
 	userReceived := make(chan auth.UserModel)
 
-	dummyR.returnStore = func(model auth.UserModel) (int, error) {
+	dummyR.returnStore = func(model auth.UserModel) (uuid.UUID, error) {
 		go func() {
 			userReceived <- model
 		}()
-		return 0, nil
+		return model.ID, nil
 	}
 
 	as := auth.NewService(dummyR)
 	usr := auth.UserModel{
-		Email:     "ankuranand@example.com",
+		Email:     "AnkurananD@example.com", // email should be normalized
 		Password:  password,
 		FirstName: "Ankur",
 		LastName:  "Anand",

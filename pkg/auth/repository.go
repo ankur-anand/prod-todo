@@ -12,7 +12,7 @@ type Repository interface {
 	FindByEmail(ctx context.Context, email string) (UserModel, error)
 	FindAll(ctx context.Context) (UserIterator, error)
 	Update(ctx context.Context, user UserModel) error
-	Store(ctx context.Context, user UserModel) (int, error)
+	Store(ctx context.Context, user UserModel) (uuid.UUID, error)
 }
 
 // Iterator is implemented by type that can be iterated.
