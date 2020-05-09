@@ -4,5 +4,6 @@ CREATE TABLE IF NOT EXISTS users (
     password_hash VARCHAR NOT NULL,
     first_name VARCHAR NOT NULL,
     last_name VARCHAR,
+    user_name VARCHAR NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT now()
 );
