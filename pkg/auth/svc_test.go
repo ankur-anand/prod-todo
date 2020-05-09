@@ -17,7 +17,7 @@ type dummyRepo struct {
 	returnStore func(auth.UserModel) (int, error)
 }
 
-func (d dummyRepo) Find(ctx context.Context, id int) (auth.UserModel, error) {
+func (d dummyRepo) Find(ctx context.Context, id uuid.UUID) (auth.UserModel, error) {
 	panic("implement me")
 }
 
@@ -26,7 +26,7 @@ func (d dummyRepo) FindByEmail(ctx context.Context,
 	return d.returnFunc(), nil
 }
 
-func (d dummyRepo) FindAll(ctx context.Context) ([]auth.UserModel, error) {
+func (d dummyRepo) FindAll(ctx context.Context) (auth.UserIterator, error) {
 	panic("implement me")
 }
 
