@@ -22,6 +22,9 @@ INSERT INTO users (user_id, email_id, password_hash, first_name, last_name, user
 `
 )
 
+// Compile-time check for ensuring PgSQL implements auth.Repository.
+var _ auth.Repository = (*PgSQL)(nil)
+
 // PgSQL provides a AUTH Repository implementation over a PostgreSQL database
 type PgSQL struct {
 	// db holds connection in a pool for optimal performance
