@@ -13,6 +13,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/ankur-anand/prod-app/pkg/repository"
+
+	"github.com/ankur-anand/prod-app/pkg/repository/authstorage/testsuite"
+
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
@@ -24,6 +28,7 @@ import (
 
 var (
 	pgURL *url.URL
+	repo  repository.PostgreSQL
 )
 
 func TestMain(m *testing.M) {
@@ -129,6 +134,10 @@ func TestMain(m *testing.M) {
 		log.Fatalf("An error occurred while syncing the database.. %v", err)
 	}
 
+	repo, err = repository.NewPostgreSQL(pgURL.String())
+	if err != nil {
+		log.Fatalf("error init repo connection %v", err)
+	}
 	// start other test
 	code = m.Run()
 	err = conn.Close(context.Background())
@@ -140,4 +149,25 @@ func TestMain(m *testing.M) {
 		log.Println("error could not purge resource")
 	}
 	os.Exit(code)
+}
+
+func TestFindAndStore(t *testing.T) {
+	t.Parallel()
+	suiteBase := &testsuite.SuiteBase{}
+	suiteBase.SetRepo(repo.AuthSQL())
+	suiteBase.TestFindAndStore(t)
+}
+
+func TestFindByEmailAndStore(t *testing.T) {
+	t.Parallel()
+	suiteBase := &testsuite.SuiteBase{}
+	suiteBase.SetRepo(repo.AuthSQL())
+	suiteBase.TestFindByEmailAndStore(t)
+}
+
+func TestDuplicateEmailStorePqSQL(t *testing.T) {
+	t.Parallel()
+	suiteBase := &testsuite.SuiteBase{}
+	suiteBase.SetRepo(repo.AuthSQL())
+	suiteBase.TestDuplicateEmailStorePqSQL(t)
 }
