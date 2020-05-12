@@ -68,7 +68,7 @@ func TestService_IsValidEmail(t *testing.T) {
 			want:  false,
 		},
 	}
-	as := domain.NewService(dummyRepo{})
+	as := domain.NewRegAndAuthService(dummyRepo{})
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
 			if as.IsValidEmail(tc.email) != tc.want {
@@ -102,7 +102,7 @@ func TestService_IsValidPassword(t *testing.T) {
 			want:     true,
 		},
 	}
-	as := domain.NewService(dummyRepo{})
+	as := domain.NewRegAndAuthService(dummyRepo{})
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
 			if as.IsValidPassword(tc.password) != tc.want {
@@ -124,7 +124,7 @@ func TestService_IsDuplicateRegistration(t *testing.T) {
 			Username: "ankuranand",
 		}
 	}
-	as := domain.NewService(dummyR)
+	as := domain.NewRegAndAuthService(dummyR)
 	ok, _ := as.IsDuplicateRegistration(context.Background(), "anKuranand@example.com")
 	if !ok {
 		t.Errorf("duplicate Registration validation failed for %s", "ankuranand@example.com")
@@ -153,7 +153,7 @@ func TestService_IsCredentialValid(t *testing.T) {
 			Username: "ankuranand",
 		}
 	}
-	as := domain.NewService(dummyR)
+	as := domain.NewRegAndAuthService(dummyR)
 	ok, _ := as.IsCredentialValid(context.Background(), "ankuranand@example.com", password)
 	if !ok {
 		t.Errorf("credentail validation failed")
@@ -180,7 +180,7 @@ func TestService_StoreUser(t *testing.T) {
 		return model.ID, nil
 	}
 
-	as := domain.NewService(dummyR)
+	as := domain.NewRegAndAuthService(dummyR)
 	usr := domain.UserModel{
 		Email:     "AnkurananD@example.com", // email should be normalized
 		Password:  password,
