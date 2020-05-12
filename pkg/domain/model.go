@@ -1,8 +1,8 @@
-package auth
+package domain
 
 import "github.com/google/uuid"
 
-// UserModel represents individual User
+// UserModel represents individual user registered in the system
 type UserModel struct {
 	ID        uuid.UUID
 	Email     string

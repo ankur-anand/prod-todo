@@ -1,6 +1,6 @@
 // +build unit_tests all_tests
 
-package auth_test
+package domain_test
 
 import (
 	"context"
@@ -11,32 +11,32 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/ankur-anand/prod-app/pkg/auth"
+	"github.com/ankur-anand/prod-app/pkg/domain"
 )
 
 type dummyRepo struct {
-	returnFunc  func() auth.UserModel
-	returnStore func(auth.UserModel) (uuid.UUID, error)
+	returnFunc  func() domain.UserModel
+	returnStore func(domain.UserModel) (uuid.UUID, error)
 }
 
-func (d dummyRepo) Find(ctx context.Context, id uuid.UUID) (auth.UserModel, error) {
+func (d dummyRepo) Find(ctx context.Context, id uuid.UUID) (domain.UserModel, error) {
 	panic("implement me")
 }
 
 func (d dummyRepo) FindByEmail(ctx context.Context,
-	email string) (auth.UserModel, error) {
+	email string) (domain.UserModel, error) {
 	return d.returnFunc(), nil
 }
 
-func (d dummyRepo) FindAll(ctx context.Context) (auth.UserIterator, error) {
+func (d dummyRepo) FindAll(ctx context.Context) (domain.UserIterator, error) {
 	panic("implement me")
 }
 
-func (d dummyRepo) Update(ctx context.Context, user auth.UserModel) error {
+func (d dummyRepo) Update(ctx context.Context, user domain.UserModel) error {
 	panic("implement me")
 }
 
-func (d dummyRepo) Store(ctx context.Context, user auth.UserModel) (uuid.UUID, error) {
+func (d dummyRepo) Store(ctx context.Context, user domain.UserModel) (uuid.UUID, error) {
 	return d.returnStore(user)
 }
 
@@ -68,7 +68,7 @@ func TestService_IsValidEmail(t *testing.T) {
 			want:  false,
 		},
 	}
-	as := auth.NewService(dummyRepo{})
+	as := domain.NewService(dummyRepo{})
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
 			if as.IsValidEmail(tc.email) != tc.want {
@@ -102,7 +102,7 @@ func TestService_IsValidPassword(t *testing.T) {
 			want:     true,
 		},
 	}
-	as := auth.NewService(dummyRepo{})
+	as := domain.NewService(dummyRepo{})
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
 			if as.IsValidPassword(tc.password) != tc.want {
@@ -116,15 +116,15 @@ func TestService_IsValidPassword(t *testing.T) {
 func TestService_IsDuplicateRegistration(t *testing.T) {
 	t.Parallel()
 	dummyR := dummyRepo{}
-	dummyR.returnFunc = func() auth.UserModel {
-		return auth.UserModel{
+	dummyR.returnFunc = func() domain.UserModel {
+		return domain.UserModel{
 			ID:       uuid.New(),
 			Email:    "ankuranand@example.com",
 			Password: "garbage",
 			Username: "ankuranand",
 		}
 	}
-	as := auth.NewService(dummyR)
+	as := domain.NewService(dummyR)
 	ok, _ := as.IsDuplicateRegistration(context.Background(), "anKuranand@example.com")
 	if !ok {
 		t.Errorf("duplicate Registration validation failed for %s", "ankuranand@example.com")
@@ -145,15 +145,15 @@ func TestService_IsCredentialValid(t *testing.T) {
 		t.Fatal(err)
 	}
 	dummyR := dummyRepo{}
-	dummyR.returnFunc = func() auth.UserModel {
-		return auth.UserModel{
+	dummyR.returnFunc = func() domain.UserModel {
+		return domain.UserModel{
 			ID:       uuid.New(),
 			Email:    "ankuranand@example.com",
 			Password: string(encryptedPass),
 			Username: "ankuranand",
 		}
 	}
-	as := auth.NewService(dummyR)
+	as := domain.NewService(dummyR)
 	ok, _ := as.IsCredentialValid(context.Background(), "ankuranand@example.com", password)
 	if !ok {
 		t.Errorf("credentail validation failed")
@@ -171,17 +171,17 @@ func TestService_StoreUser(t *testing.T) {
 	password := "ankuranand"
 
 	dummyR := dummyRepo{}
-	userReceived := make(chan auth.UserModel)
+	userReceived := make(chan domain.UserModel)
 
-	dummyR.returnStore = func(model auth.UserModel) (uuid.UUID, error) {
+	dummyR.returnStore = func(model domain.UserModel) (uuid.UUID, error) {
 		go func() {
 			userReceived <- model
 		}()
 		return model.ID, nil
 	}
 
-	as := auth.NewService(dummyR)
-	usr := auth.UserModel{
+	as := domain.NewService(dummyR)
+	usr := domain.UserModel{
 		Email:     "AnkurananD@example.com", // email should be normalized
 		Password:  password,
 		FirstName: "Ankur",

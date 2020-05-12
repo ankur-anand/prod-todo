@@ -1,4 +1,4 @@
-package auth
+package domain
 
 import (
 	"context"
@@ -27,21 +27,23 @@ func normalize(email string) string {
 	return email
 }
 
-// Service for auth
-type Service struct {
-	repo Repository
+// AuthService provides the use cases implementation to work
+// with the entities of the underlying domain during
+// SignIn and SignUP
+type AuthService struct {
+	repo UserRepository
 }
 
-// NewService returns a new AUTH Service initialized with
+// NewService returns a new AuthService initialized with
 // a concrete repo implementation
-func NewService(repo Repository) Service {
-	return Service{
+func NewService(repo UserRepository) AuthService {
+	return AuthService{
 		repo: repo,
 	}
 }
 
 // IsValidEmail checks if an email is valid or not
-func (as Service) IsValidEmail(email string) bool {
+func (as AuthService) IsValidEmail(email string) bool {
 	email = normalize(email)
 	// email addresses have a practical limit of 254 bytes
 	if len(email) > 254 || !rxEmail.MatchString(email) {
@@ -56,7 +58,7 @@ func (as Service) IsValidEmail(email string) bool {
 }
 
 // IsValidPassword validate if the password is valid or not
-func (as Service) IsValidPassword(password string) bool {
+func (as AuthService) IsValidPassword(password string) bool {
 	// min 8 character only and less than 254
 	if len(strings.TrimSpace(password)) > 254 || len(strings.TrimSpace(password)) < 8 {
 		return false
@@ -65,7 +67,7 @@ func (as Service) IsValidPassword(password string) bool {
 }
 
 // IsCredentialValid checks if the Credential is ok
-func (as Service) IsCredentialValid(ctx context.Context, email string,
+func (as AuthService) IsCredentialValid(ctx context.Context, email string,
 	password string) (bool, error) {
 	email = normalize(email)
 	user, err := as.repo.FindByEmail(ctx, email)
@@ -89,7 +91,7 @@ func (as Service) IsCredentialValid(ctx context.Context, email string,
 }
 
 // IsDuplicateRegistration checks if the user is already registered
-func (as Service) IsDuplicateRegistration(ctx context.Context, email string) (bool,
+func (as AuthService) IsDuplicateRegistration(ctx context.Context, email string) (bool,
 	error) {
 	email = normalize(email)
 	user, err := as.repo.FindByEmail(ctx, email)
@@ -104,7 +106,7 @@ func (as Service) IsDuplicateRegistration(ctx context.Context, email string) (bo
 }
 
 // StoreUser stores the user inside the storage
-func (as Service) StoreUser(ctx context.Context, model UserModel) (uuid.UUID, error) {
+func (as AuthService) StoreUser(ctx context.Context, model UserModel) (uuid.UUID, error) {
 	email := normalize(model.Email)
 	encryptedPass, err := bcrypt.GenerateFromPassword([]byte(model.Password),
 		bcrypt.DefaultCost)

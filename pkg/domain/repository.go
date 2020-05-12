@@ -1,4 +1,4 @@
-package auth
+package domain
 
 import (
 	"context"
@@ -6,8 +6,9 @@ import (
 	"github.com/google/uuid"
 )
 
-// Repository define a contract for storage, where the entities will be stored.
-type Repository interface {
+// UserRepository define a contract for storage, to interact
+// with the UserModel.
+type UserRepository interface {
 	Find(ctx context.Context, id uuid.UUID) (UserModel, error)
 	FindByEmail(ctx context.Context, email string) (UserModel, error)
 	FindAll(ctx context.Context) (UserIterator, error)
