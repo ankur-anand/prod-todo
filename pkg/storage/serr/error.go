@@ -1,4 +1,4 @@
-package storageerror
+package serr
 
 import (
 	"fmt"

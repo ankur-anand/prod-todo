@@ -1,10 +1,10 @@
-package authstorage
+package auths
 
 import (
 	"context"
 	"fmt"
 
-	"github.com/ankur-anand/prod-app/pkg/repository/storageerror"
+	"github.com/ankur-anand/prod-app/pkg/storage/serr"
 
 	"github.com/ankur-anand/prod-app/pkg/auth"
 	"github.com/google/uuid"
@@ -31,7 +31,7 @@ type PgSQL struct {
 	db *pgxpool.Pool
 }
 
-// NewAuthPgSQL returns an initialized AUTH PgSQL repository with connection pool
+// NewAuthPgSQL returns an initialized AUTH PgSQL storage with connection pool
 func NewAuthPgSQL(db *pgxpool.Pool) (PgSQL, error) {
 	if db == nil {
 		return PgSQL{}, fmt.Errorf("db proxy pool is nil")
@@ -48,10 +48,10 @@ func (p PgSQL) Find(ctx context.Context, id uuid.UUID) (auth.UserModel, error) {
 	case nil:
 		return user, nil
 	case pgx.ErrNoRows:
-		return user, storageerror.NewQueryError(findUserByIDQuery, ErrUserNotFound, err.Error())
+		return user, serr.NewQueryError(findUserByIDQuery, ErrUserNotFound, err.Error())
 	default:
 		// something else went wrong,
-		return user, storageerror.NewQueryError(findUserByIDQuery, err, err.Error())
+		return user, serr.NewQueryError(findUserByIDQuery, err, err.Error())
 	}
 }
 
@@ -64,10 +64,10 @@ func (p PgSQL) FindByEmail(ctx context.Context, email string) (auth.UserModel, e
 	case nil:
 		return user, nil
 	case pgx.ErrNoRows:
-		return user, storageerror.NewQueryError(findUserByEmailQuery, ErrUserNotFound, err.Error())
+		return user, serr.NewQueryError(findUserByEmailQuery, ErrUserNotFound, err.Error())
 	default:
 		// something else went wrong
-		return user, storageerror.NewQueryError(findUserByEmailQuery, err, err.Error())
+		return user, serr.NewQueryError(findUserByEmailQuery, err, err.Error())
 	}
 }
 
@@ -85,10 +85,10 @@ func (p PgSQL) Update(ctx context.Context, user auth.UserModel) error {
 func (p PgSQL) Store(ctx context.Context, user auth.UserModel) (uuid.UUID, error) {
 	cmd, err := p.db.Exec(ctx, storeUserQuery, user.ID, user.Email, user.Password, user.FirstName, user.LastName, user.Username)
 	if err != nil {
-		return uuid.Nil, storageerror.NewQueryError(storeUserQuery, err, err.Error())
+		return uuid.Nil, serr.NewQueryError(storeUserQuery, err, err.Error())
 	}
 	if !cmd.Insert() && cmd.RowsAffected() != 1 {
-		return uuid.Nil, storageerror.NewQueryError(storeUserQuery, ErrInsertCommand, "")
+		return uuid.Nil, serr.NewQueryError(storeUserQuery, ErrInsertCommand, "")
 	}
 	return user.ID, nil
 }

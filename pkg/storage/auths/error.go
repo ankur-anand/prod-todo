@@ -1,4 +1,4 @@
-package authstorage
+package auths
 
 import "errors"
 

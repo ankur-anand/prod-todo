@@ -7,15 +7,15 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ankur-anand/prod-app/pkg/repository/authstorage"
+	"github.com/ankur-anand/prod-app/pkg/storage/auths"
 
 	"github.com/google/uuid"
 
 	"github.com/ankur-anand/prod-app/pkg/auth"
 )
 
-// SuiteBase defines a re-usable set of authstorage-Repository related tests that can
-// be executed against any type that implements authstorage.Repository.
+// SuiteBase defines a re-usable set of auths-Repository related tests that can
+// be executed against any type that implements auths.Repository.
 type SuiteBase struct {
 	r auth.Repository
 }
@@ -33,7 +33,7 @@ func (s *SuiteBase) TestFindAndStore(t *testing.T) {
 		t.Errorf("expected error for random uuid user find")
 	}
 
-	if err != nil && errors.Is(err, authstorage.ErrUserNotFound) {
+	if err != nil && errors.Is(err, auths.ErrUserNotFound) {
 		t.Errorf("expected error type value [`no user found`] got `%s`", err.Error())
 	}
 	id := uuid.New()
@@ -72,7 +72,7 @@ func (s *SuiteBase) TestFindByEmailAndStore(t *testing.T) {
 	if err == nil {
 		t.Errorf("expected error for unknown email find")
 	}
-	if err != nil && errors.Is(err, authstorage.ErrUserNotFound) {
+	if err != nil && errors.Is(err, auths.ErrUserNotFound) {
 		t.Errorf("expected error type value [`no user found`] got `%s`", err.Error())
 	}
 	id := uuid.New()

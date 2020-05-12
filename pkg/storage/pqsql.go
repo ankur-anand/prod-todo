@@ -1,9 +1,9 @@
-package repository
+package storage
 
 import (
 	"context"
 
-	"github.com/ankur-anand/prod-app/pkg/repository/authstorage"
+	"github.com/ankur-anand/prod-app/pkg/storage/auths"
 
 	"github.com/jackc/pgx/v4/pgxpool"
 )
@@ -12,10 +12,10 @@ import (
 type PostgreSQL struct {
 	// db holds connection in a pool for optimal performance
 	db      *pgxpool.Pool
-	authSQL authstorage.PgSQL
+	authSQL auths.PgSQL
 }
 
-// NewPostgreSQL returns an initialized PostgreSQL repository with connection pool
+// NewPostgreSQL returns an initialized PostgreSQL storage with connection pool
 func NewPostgreSQL(dbURL string) (PostgreSQL, error) {
 	poolConfig, err := pgxpool.ParseConfig(dbURL)
 	if err != nil {
@@ -26,7 +26,7 @@ func NewPostgreSQL(dbURL string) (PostgreSQL, error) {
 		return PostgreSQL{}, err
 	}
 
-	authPg, err := authstorage.NewAuthPgSQL(db)
+	authPg, err := auths.NewAuthPgSQL(db)
 	if err != nil {
 		return PostgreSQL{}, err
 	}
@@ -34,6 +34,6 @@ func NewPostgreSQL(dbURL string) (PostgreSQL, error) {
 }
 
 // AuthSQL return AUTH Repository implementation over a PostgreSQL database
-func (p PostgreSQL) AuthSQL() authstorage.PgSQL {
+func (p PostgreSQL) AuthSQL() auths.PgSQL {
 	return p.authSQL
 }

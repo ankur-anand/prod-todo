@@ -1,6 +1,6 @@
 // +build integration_tests all_tests
 
-package repository_test
+package storage_test
 
 import (
 	"context"
@@ -15,9 +15,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ankur-anand/prod-app/pkg/repository"
+	"github.com/ankur-anand/prod-app/pkg/storage"
 
-	"github.com/ankur-anand/prod-app/pkg/repository/authstorage/testsuite"
+	"github.com/ankur-anand/prod-app/pkg/storage/auths/testsuite"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
@@ -30,7 +30,7 @@ import (
 
 var (
 	pgURL *url.URL
-	repo  repository.PostgreSQL
+	repo  storage.PostgreSQL
 )
 
 func TestMain(m *testing.M) {
@@ -136,7 +136,7 @@ func TestMain(m *testing.M) {
 		log.Fatalf("An error occurred while syncing the database.. %v", err)
 	}
 
-	repo, err = repository.NewPostgreSQL(pgURL.String())
+	repo, err = storage.NewPostgreSQL(pgURL.String())
 	if err != nil {
 		log.Fatalf("error init repo connection %v", err)
 	}

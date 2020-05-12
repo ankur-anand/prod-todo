@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-// Repository define a repository, where the entities will be stored.
+// Repository define a contract for storage, where the entities will be stored.
 type Repository interface {
 	Find(ctx context.Context, id uuid.UUID) (UserModel, error)
 	FindByEmail(ctx context.Context, email string) (UserModel, error)
