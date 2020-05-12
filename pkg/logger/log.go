@@ -1,7 +1,6 @@
 package logger
 
 import (
-	"net/http"
 	"time"
 
 	"go.uber.org/zap"
@@ -55,13 +54,29 @@ func (log *Logger) Fatal(msg string, field ...Field) {
 	log.nonSampled.Fatal(msg, field...)
 }
 
-// HTTPRequest is an helper method to log an HTTPRequest directly
-func (log *Logger) HTTPRequest(message string, statusCode int, duration time.Duration, r *http.Request, err error) {
-	if err != nil {
-		log.nonSampled.Error(message, String("method", r.Method), String("url", r.URL.String()), Int("status", statusCode), Duration("duration", duration), zap.Error(err))
-		return
+// Skip constructs a no-op field, which is often useful when handling invalid
+// inputs in other Field constructors.
+func Skip() Field {
+	return Field{Type: zapcore.SkipType}
+}
+
+// NamedError constructs a field that lazily stores err.Error() under the
+// provided key. Errors which also implement fmt.Formatter (like those produced
+// by github.com/pkg/errors) will also have their verbose representation stored
+// under key+"Verbose". If passed a nil error, the field is a no-op.
+//
+// For the common case in which the key is simply "error", the Error function
+// is shorter and less repetitive.
+func NamedError(key string, err error) Field {
+	if err == nil {
+		return Skip()
 	}
-	log.sampled.Error(message, String("method", r.Method), String("url", r.URL.String()), Int("status", statusCode), Duration("duration", duration))
+	return Field{Key: key, Type: zapcore.ErrorType, Interface: err}
+}
+
+// Error is shorthand for the common idiom NamedError("error", err).
+func Error(err error) Field {
+	return NamedError("error", err)
 }
 
 // Sync should be called before application exit.
@@ -80,11 +95,11 @@ func NewProduction() (*Logger, error) {
 	nonSampled := zap.NewProductionConfig()
 	// disable error sampling
 	nonSampled.Sampling = nil
-	logSamp, err := sampled.Build()
+	logSamp, err := sampled.Build(zap.AddCallerSkip(1))
 	if err != nil {
 		return nil, err
 	}
-	logNonSamp, err := nonSampled.Build()
+	logNonSamp, err := nonSampled.Build(zap.AddCallerSkip(1))
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +112,7 @@ func NewProduction() (*Logger, error) {
 // NewDevelopment returns a new Dev Logger
 func NewDevelopment() (*Logger, error) {
 	dev := zap.NewDevelopmentConfig()
-	logDev, err := dev.Build()
+	logDev, err := dev.Build(zap.AddCallerSkip(1))
 	if err != nil {
 		return nil, err
 	}
