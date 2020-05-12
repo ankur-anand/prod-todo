@@ -11,17 +11,17 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/ankur-anand/prod-app/pkg/auth"
+	"github.com/ankur-anand/prod-app/pkg/domain"
 )
 
 // SuiteBase defines a re-usable set of auths-Repository related tests that can
 // be executed against any type that implements auths.Repository.
 type SuiteBase struct {
-	r auth.Repository
+	r domain.UserRepository
 }
 
 // SetRepo configures the test-suite to run all tests against particular repo.
-func (s *SuiteBase) SetRepo(r auth.Repository) {
+func (s *SuiteBase) SetRepo(r domain.UserRepository) {
 	s.r = r
 }
 
@@ -38,7 +38,7 @@ func (s *SuiteBase) TestFindAndStore(t *testing.T) {
 	}
 	id := uuid.New()
 	// store a new user
-	user := auth.UserModel{
+	user := domain.UserModel{
 		ID:        id,
 		Email:     "ankuranand@example.com",
 		Password:  "somegibrish&^5$(075",
@@ -77,7 +77,7 @@ func (s *SuiteBase) TestFindByEmailAndStore(t *testing.T) {
 	}
 	id := uuid.New()
 	// store a new user
-	user := auth.UserModel{
+	user := domain.UserModel{
 		ID:        id,
 		Email:     "ankuranand1@example.com",
 		Password:  "somegibrish&^5$(075",
@@ -111,7 +111,7 @@ func (s *SuiteBase) TestDuplicateEmailStorePqSQL(t *testing.T) {
 	id := uuid.New()
 	email := id.String() + "example.com"
 	// store a new user
-	user := auth.UserModel{
+	user := domain.UserModel{
 		ID:        id,
 		Email:     email,
 		Password:  "somegibrish&^5$(075",

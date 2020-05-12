@@ -6,7 +6,7 @@ import (
 
 	"github.com/ankur-anand/prod-app/pkg/storage/serr"
 
-	"github.com/ankur-anand/prod-app/pkg/auth"
+	"github.com/ankur-anand/prod-app/pkg/domain"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -22,8 +22,8 @@ INSERT INTO users (user_id, email_id, password_hash, first_name, last_name, user
 `
 )
 
-// Compile-time check for ensuring PgSQL implements auth.Repository.
-var _ auth.Repository = (*PgSQL)(nil)
+// Compile-time check for ensuring PgSQL implements domain.UserRepository.
+var _ domain.UserRepository = (*PgSQL)(nil)
 
 // PgSQL provides a AUTH Repository implementation over a PostgreSQL database
 type PgSQL struct {
@@ -40,8 +40,8 @@ func NewAuthPgSQL(db *pgxpool.Pool) (PgSQL, error) {
 }
 
 // Find returns an UserModel associated with the ID in the DB
-func (p PgSQL) Find(ctx context.Context, id uuid.UUID) (auth.UserModel, error) {
-	var user auth.UserModel
+func (p PgSQL) Find(ctx context.Context, id uuid.UUID) (domain.UserModel, error) {
+	var user domain.UserModel
 	// pgx close the row for reuse
 	err := p.db.QueryRow(ctx, findUserByIDQuery, id).Scan(&user.ID, &user.Email, &user.Password, &user.FirstName, &user.LastName, &user.Username)
 	switch err {
@@ -56,8 +56,8 @@ func (p PgSQL) Find(ctx context.Context, id uuid.UUID) (auth.UserModel, error) {
 }
 
 // FindByEmail returns an UserModel associated with the emailID in the DB
-func (p PgSQL) FindByEmail(ctx context.Context, email string) (auth.UserModel, error) {
-	var user auth.UserModel
+func (p PgSQL) FindByEmail(ctx context.Context, email string) (domain.UserModel, error) {
+	var user domain.UserModel
 	// pgx close the row for reuse
 	err := p.db.QueryRow(ctx, findUserByEmailQuery, email).Scan(&user.ID, &user.Email, &user.Password, &user.FirstName, &user.LastName, &user.Username)
 	switch err {
@@ -72,17 +72,17 @@ func (p PgSQL) FindByEmail(ctx context.Context, email string) (auth.UserModel, e
 }
 
 // FindAll returns all User inside the DB
-func (p PgSQL) FindAll(ctx context.Context) (auth.UserIterator, error) {
+func (p PgSQL) FindAll(ctx context.Context) (domain.UserIterator, error) {
 	panic("implement me")
 }
 
 // Update stores the updated user mode inside the DB
-func (p PgSQL) Update(ctx context.Context, user auth.UserModel) error {
+func (p PgSQL) Update(ctx context.Context, user domain.UserModel) error {
 	panic("implement me")
 }
 
 // Store stores the user mode inside the DB
-func (p PgSQL) Store(ctx context.Context, user auth.UserModel) (uuid.UUID, error) {
+func (p PgSQL) Store(ctx context.Context, user domain.UserModel) (uuid.UUID, error) {
 	cmd, err := p.db.Exec(ctx, storeUserQuery, user.ID, user.Email, user.Password, user.FirstName, user.LastName, user.Username)
 	if err != nil {
 		return uuid.Nil, serr.NewQueryError(storeUserQuery, err, err.Error())
