@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/ankur-anand/prod-app/pkg/logger"
+	"github.com/ankur-anand/prod-todo/pkg/logger"
 )
 
 var logTesting, _ = logger.NewDevelopment()

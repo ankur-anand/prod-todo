@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ankur-anand/prod-app/pkg/storage/serr"
+	"github.com/ankur-anand/prod-todo/pkg/storage/serr"
 
-	"github.com/ankur-anand/prod-app/pkg/domain"
+	"github.com/ankur-anand/prod-todo/pkg/domain"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"

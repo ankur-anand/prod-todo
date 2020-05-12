@@ -15,9 +15,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ankur-anand/prod-app/pkg/storage"
+	"github.com/ankur-anand/prod-todo/pkg/storage"
 
-	"github.com/ankur-anand/prod-app/pkg/storage/auths/testsuite"
+	"github.com/ankur-anand/prod-todo/pkg/storage/auths/testsuite"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"

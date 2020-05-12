@@ -8,8 +8,8 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/ankur-anand/prod-app/pkg/apis/rest"
-	logger2 "github.com/ankur-anand/prod-app/pkg/logger"
+	"github.com/ankur-anand/prod-todo/pkg/apis/rest"
+	logger2 "github.com/ankur-anand/prod-todo/pkg/logger"
 )
 
 type server struct {

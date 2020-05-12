@@ -1,9 +1,10 @@
-module github.com/ankur-anand/prod-app
+module github.com/ankur-anand/prod-todo
 
 go 1.14
 
 require (
 	github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 // indirect
+	github.com/ankur-anand/prod-app v0.0.0-20200512191708-7e90d7f7299d
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/containerd/continuity v0.0.0-20200413184840-d3ef23f19fbb // indirect
 	github.com/containerd/fifo v0.0.0-20200410184934-f15a3290365b // indirect

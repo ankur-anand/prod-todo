@@ -11,7 +11,7 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/ankur-anand/prod-app/pkg/domain"
+	"github.com/ankur-anand/prod-todo/pkg/domain"
 )
 
 type dummyRepo struct {

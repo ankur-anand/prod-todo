@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ankur-anand/prod-app/pkg/logger"
+	"github.com/ankur-anand/prod-todo/pkg/logger"
 	"github.com/gorilla/mux"
 )
 

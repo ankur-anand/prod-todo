@@ -3,7 +3,7 @@ package storage
 import (
 	"context"
 
-	"github.com/ankur-anand/prod-app/pkg/storage/auths"
+	"github.com/ankur-anand/prod-todo/pkg/storage/auths"
 
 	"github.com/jackc/pgx/v4/pgxpool"
 )

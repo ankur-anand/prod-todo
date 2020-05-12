@@ -7,11 +7,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ankur-anand/prod-app/pkg/storage/auths"
+	"github.com/ankur-anand/prod-todo/pkg/storage/auths"
 
 	"github.com/google/uuid"
 
-	"github.com/ankur-anand/prod-app/pkg/domain"
+	"github.com/ankur-anand/prod-todo/pkg/domain"
 )
 
 // SuiteBase defines a re-usable set of auths-Repository related tests that can
