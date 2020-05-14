@@ -24,18 +24,22 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
+// JWT Provide a JSON Web Token and Validation
 type JWT struct {
 	rsaPrivateKey *rsa.PrivateKey
 	rsaPublicKey  *rsa.PublicKey
 	issuer        string
 	aud           []string
 	validator     *jwt.ValidationHelper
+	validDuration time.Duration
 }
 
-func NewJWT(privKey *rsa.PrivateKey, pubKey *rsa.PublicKey, iss, aud string) (JWT, error) {
+// NewJWT return an initialized JWT
+func NewJWT(privKey *rsa.PrivateKey, pubKey *rsa.PublicKey, iss, aud string, validDuration time.Duration) (JWT, error) {
 	var j JWT
 	if privKey != nil && pubKey != nil {
 		sAud := []string{aud}
+		j.validDuration = validDuration
 		j.rsaPublicKey = pubKey
 		j.rsaPrivateKey = privKey
 		j.issuer = iss
@@ -46,6 +50,7 @@ func NewJWT(privKey *rsa.PrivateKey, pubKey *rsa.PublicKey, iss, aud string) (JW
 	return j, fmt.Errorf("rsa private key and public key should not be nil")
 }
 
+// Validate validates the provided token
 func (j JWT) Validate(token string) (string, error) {
 	c := &Claims{}
 
@@ -70,10 +75,11 @@ func (j JWT) Validate(token string) (string, error) {
 	return c.UserID, nil
 }
 
+// Generate a new token
 func (j JWT) Generate(id string) (string, error) {
 	// Declare the expiration time of the token
 	// here, we have kept it as 5 minutes
-	expirationTime := time.Now().Add(5 * time.Minute)
+	expirationTime := time.Now().Add(j.validDuration * time.Minute)
 	// Create the JWT claims, which includes the username and expiry time
 	claim := &Claims{}
 	claim.UserID = id
