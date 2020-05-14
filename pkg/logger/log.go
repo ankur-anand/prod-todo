@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"io"
 	"time"
 
 	"go.uber.org/zap"
@@ -119,6 +120,45 @@ func NewDevelopment() (*Logger, error) {
 	return &Logger{
 		sampled:    logDev,
 		nonSampled: logDev,
+		isDev:      true,
+	}, nil
+}
+
+// A WriteSyncer is an io.Writer that can also flush any buffered data.
+// Used only for testing config
+type WriteSyncer interface {
+	io.Writer
+	Sync() error
+}
+
+// no op
+type noOpWriteSyncer struct {
+}
+
+func (d noOpWriteSyncer) Write(p []byte) (n int, err error) {
+	return 0, nil
+}
+
+func (d noOpWriteSyncer) Sync() error {
+	return nil
+}
+
+// NewTesting returns a new Test Logger with disabled stack trace
+// and can take WriteSyncer for output
+func NewTesting(ws WriteSyncer) (*Logger, error) {
+	if ws == nil {
+		ws = noOpWriteSyncer{}
+	}
+	enc := zap.NewDevelopmentEncoderConfig()
+	enc.TimeKey = "ts"
+	enc.MessageKey = "message"
+	enc.LevelKey = "level"
+	en := zapcore.NewJSONEncoder(enc)
+	core := zapcore.NewCore(en, ws, zap.DebugLevel)
+	l := zap.New(core)
+	return &Logger{
+		sampled:    l,
+		nonSampled: l,
 		isDev:      true,
 	}, nil
 }
