@@ -51,7 +51,8 @@ func TestMain(m *testing.M) {
 }
 
 func TestJWT_Generate(t *testing.T) {
-	nJwt, err := authtoken.NewJWT(rsaPrK, rsaPuK, "test", "ankur")
+	t.Parallel()
+	nJwt, err := authtoken.NewJWT(rsaPrK, rsaPuK, "test", "ankur", 5)
 	if err != nil {
 		t.Error(err)
 	}
@@ -62,8 +63,9 @@ func TestJWT_Generate(t *testing.T) {
 }
 
 func TestJWT_Validate(t *testing.T) {
+	t.Parallel()
 	userID := "randomUUUID"
-	nJwt, err := authtoken.NewJWT(rsaPrK, rsaPuK, "test", "ankur")
+	nJwt, err := authtoken.NewJWT(rsaPrK, rsaPuK, "test", "ankur", 5)
 	if err != nil {
 		t.Error(err)
 	}
@@ -82,7 +84,7 @@ func TestJWT_Validate(t *testing.T) {
 
 func BenchmarkJWT_Validate(b *testing.B) {
 	userID := "randomUUUID"
-	nJwt, err := authtoken.NewJWT(rsaPrK, rsaPuK, "test", "ankur")
+	nJwt, err := authtoken.NewJWT(rsaPrK, rsaPuK, "test", "ankur", 5)
 	if err != nil {
 		b.Error(err)
 	}
