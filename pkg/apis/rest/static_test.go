@@ -10,13 +10,13 @@ import (
 	"github.com/ankur-anand/prod-todo/pkg/logger"
 )
 
-var logTesting, _ = logger.NewDevelopment()
-
 func TestStaticHandler_Home(t *testing.T) {
 	t.Parallel()
+	l, _ := logger.NewTesting(nil)
+	defer l.Sync()
 	req := httptest.NewRequest("GET", "/", nil)
 	rr := httptest.NewRecorder()
-	sh := newStaticHandler(logTesting)
+	sh := newStaticHandler(l)
 	handler := http.HandlerFunc(sh.home)
 	handler.ServeHTTP(rr, req)
 
@@ -34,9 +34,11 @@ func TestStaticHandler_Home(t *testing.T) {
 
 func TestStaticHandler_HealthAliveness(t *testing.T) {
 	t.Parallel()
+	l, _ := logger.NewTesting(nil)
+	defer l.Sync()
 	req := httptest.NewRequest("GET", "/health/live", nil)
 	rr := httptest.NewRecorder()
-	sh := newStaticHandler(logTesting)
+	sh := newStaticHandler(l)
 	handler := http.HandlerFunc(sh.healthLive)
 	handler.ServeHTTP(rr, req)
 

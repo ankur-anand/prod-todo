@@ -23,17 +23,13 @@ func newStaticHandler(logger *logger.Logger) staticHandler {
 func (sh staticHandler) home(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	_, err := w.Write(homeRouteStaticResponse)
-	if err != nil {
-		sh.logger.Error("response writer err", logger.Error(err))
-	}
+	checkResponseWriteErr(err, sh.logger)
 	sh.logger.Info("homepage", httpReqField(http.StatusOK, r, nil)...)
 }
 
 func (sh staticHandler) healthLive(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	_, err := w.Write(healthiest)
-	if err != nil {
-		sh.logger.Error("response writer err", logger.Error(err))
-	}
+	checkResponseWriteErr(err, sh.logger)
 	sh.logger.Info("healthlive", httpReqField(http.StatusOK, r, nil)...)
 }
