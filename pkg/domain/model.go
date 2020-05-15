@@ -11,3 +11,19 @@ type UserModel struct {
 	LastName  string
 	Username  string
 }
+
+type TodoList struct {
+	// ID of the List
+	ID uuid.UUID
+	// UserID is fk to user
+	UserID uuid.UUID
+	// TodoID is fk to Todo
+	TodoID uuid.UUID
+}
+
+type Todo struct {
+	Id       int
+	Title    string
+	Content  string
+	Finished bool
+}

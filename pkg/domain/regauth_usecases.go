@@ -78,10 +78,6 @@ func (as RegAndAuthService) IsCredentialValid(ctx context.Context, email string,
 	if user.Email != email {
 		return false, nil
 	}
-	// if password is invalid no need to compare invoke compare hash
-	if !as.IsValidPassword(password) {
-		return false, nil
-	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil {
