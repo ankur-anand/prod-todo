@@ -39,6 +39,8 @@ var (
     "kind": "APISuccess"}`
 )
 
+// Tokenizer provide an abstraction to work with
+// Validation and Generation of an Auth Token
 type Tokenizer interface {
 	Validate(token string) (string, error)
 	Generate(id string) (string, error)
@@ -189,7 +191,7 @@ func (ar auth) login(w http.ResponseWriter, r *http.Request) {
 		ar.logger.Error("precondition check failed", httpReqField(code, r, err)...)
 	}
 
-	ok, err := ar.svc.IsCredentialValid(r.Context(), logForm.EmailID, logForm.Password)
+	ok, user, err := ar.svc.IsCredentialValid(r.Context(), logForm.EmailID, logForm.Password)
 	if err != nil {
 		code = http.StatusInternalServerError
 		writeInternalServerError(w, ar.logger)
@@ -206,7 +208,7 @@ func (ar auth) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := ar.tokenizer.Generate(logForm.EmailID)
+	token, err := ar.tokenizer.Generate(user.ID.String())
 	if err != nil {
 		code = http.StatusInternalServerError
 		writeInternalServerError(w, ar.logger)
