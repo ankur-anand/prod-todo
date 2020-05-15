@@ -2,6 +2,13 @@ package domain
 
 import "github.com/google/uuid"
 
+var (
+	// NilUserModel is empty UserModel, all zeros
+	NilUserModel UserModel
+	// NilTodoModel is empty TodoModel, all zeros
+	NilTodoModel TodoModel
+)
+
 // UserModel represents individual user registered in the system
 type UserModel struct {
 	ID        uuid.UUID
@@ -12,17 +19,10 @@ type UserModel struct {
 	Username  string
 }
 
-type TodoList struct {
-	// ID of the List
-	ID uuid.UUID
-	// UserID is fk to user
-	UserID uuid.UUID
-	// TodoID is fk to Todo
-	TodoID uuid.UUID
-}
-
-type Todo struct {
-	Id       int
+// TodoModel is each single individual task
+type TodoModel struct {
+	Id       uuid.UUID
+	UserID   uuid.UUID
 	Title    string
 	Content  string
 	Finished bool

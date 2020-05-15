@@ -38,3 +38,21 @@ type UserIterator interface {
 	// User returns the currently fetched User Model.
 	User() UserModel
 }
+
+// TodoRepository define a contract for storage, to interact
+// with the Todo Model.
+type TodoRepository interface {
+	Find(ctx context.Context, id uuid.UUID) (TodoModel, error)
+	FindAll(ctx context.Context, userID uuid.UUID) (TodoIterator, error)
+	Update(ctx context.Context, todo TodoModel) error
+	Store(ctx context.Context, todo TodoModel) (uuid.UUID, error)
+	Delete(ctx context.Context, id uuid.UUID) error
+}
+
+// TodoIterator is implemented by type that can iterate the Todo List.
+type TodoIterator interface {
+	Iterator
+
+	// Todo returns the currently fetched Todo Model.
+	Todo() TodoModel
+}

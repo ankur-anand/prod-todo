@@ -154,13 +154,13 @@ func TestService_IsCredentialValid(t *testing.T) {
 		}
 	}
 	as := domain.NewRegAndAuthService(dummyR)
-	ok, _ := as.IsCredentialValid(context.Background(), "ankuranand@example.com", password)
-	if !ok {
+	ok, user, _ := as.IsCredentialValid(context.Background(), "ankuranand@example.com", password)
+	if !ok && user.Email != "ankuranand@example.com" {
 		t.Errorf("credentail validation failed")
 	}
 
-	ok, _ = as.IsCredentialValid(context.Background(), "ankuranand@example.com", "garbage")
-	if ok {
+	ok, user, _ = as.IsCredentialValid(context.Background(), "ankuranand@example.com", "garbage")
+	if ok && user != domain.NilUserModel {
 		t.Errorf("credentail validation failed")
 	}
 }

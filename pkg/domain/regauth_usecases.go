@@ -66,24 +66,24 @@ func (as RegAndAuthService) IsValidPassword(password string) bool {
 	return true
 }
 
-// IsCredentialValid checks if the Credential is ok
+// IsCredentialValid checks if the Credential is ok and also returns found userModel
 func (as RegAndAuthService) IsCredentialValid(ctx context.Context, email string,
-	password string) (bool, error) {
+	password string) (bool, UserModel, error) {
 	email = normalize(email)
 	user, err := as.repo.FindByEmail(ctx, email)
 	if err != nil {
-		return false, err
+		return false, NilUserModel, err
 	}
 
 	if user.Email != email {
-		return false, nil
+		return false, NilUserModel, nil
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil {
-		return false, nil
+		return false, NilUserModel, nil
 	}
-	return true, nil
+	return true, user, nil
 }
 
 // IsDuplicateRegistration checks if the user is already registered
