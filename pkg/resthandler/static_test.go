@@ -1,6 +1,6 @@
 // +build unit_tests all_tests
 
-package rest
+package resthandler
 
 import (
 	"net/http"
@@ -25,7 +25,7 @@ func TestStaticHandler_Home(t *testing.T) {
 			status, http.StatusOK)
 	}
 
-	expected := `{"message": "hello world from rest svc"}`
+	expected := `{"message": "hello world from resthandler svc"}`
 	if rr.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rr.Body.String(), expected)

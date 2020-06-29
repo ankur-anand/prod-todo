@@ -1,6 +1,6 @@
 // +build unit_tests all_tests
 
-package rest
+package resthandler
 
 import (
 	"bytes"
@@ -13,14 +13,11 @@ import (
 	"os"
 	"testing"
 
-	"github.com/ankur-anand/prod-todo/pkg/authtoken"
-	"github.com/dgrijalva/jwt-go/v4"
-
-	"golang.org/x/crypto/bcrypt"
-
-	"github.com/ankur-anand/prod-todo/pkg/domain"
+	"github.com/ankur-anand/prod-todo/pkg"
 	"github.com/ankur-anand/prod-todo/pkg/logger"
+	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const (
@@ -64,7 +61,7 @@ func TestSignUpHandler(t *testing.T) {
 	l, _ := logger.NewTesting(nil)
 	defer l.Sync()
 	mockRep := &_mockUserRepoStorage{}
-	a := auth{logger: l, svc: domain.NewRegAndAuthService(mockRep)}
+	a := auth{logger: l, svc: pkg.NewRegAndAuthService(mockRep)}
 
 	user := signUpForm{
 		EmailID:   "ankur@example.com",
@@ -82,20 +79,18 @@ func TestSignUpHandler(t *testing.T) {
 		name        string
 		want        int
 		body        []byte
-		returnFunc  func() domain.UserModel
-		returnStore func(model domain.UserModel) (uuid.UUID, error)
+		returnFunc  func() pkg.UserModel
+		returnStore func(model pkg.UserModel) (uuid.UUID, error)
 	}{
 		{
 			name: "empty body json unmarshalling err",
 			want: 400,
 			body: nil,
-			returnFunc: func() domain.UserModel {
+			returnFunc: func() pkg.UserModel {
 				t.Fatal("this should not have been called")
-				return domain.UserModel{
-					Email: "ankur@example.com",
-				}
+				return pkg.UserModel{}
 			},
-			returnStore: func(model domain.UserModel) (uuid.UUID, error) {
+			returnStore: func(model pkg.UserModel) (uuid.UUID, error) {
 				t.Fatal("this should not have been called")
 				return model.ID, nil
 			},
@@ -104,12 +99,12 @@ func TestSignUpHandler(t *testing.T) {
 			name: "duplicate registration",
 			want: 409,
 			body: body,
-			returnFunc: func() domain.UserModel {
-				return domain.UserModel{
+			returnFunc: func() pkg.UserModel {
+				return pkg.UserModel{
 					Email: "ankur@example.com",
 				}
 			},
-			returnStore: func(model domain.UserModel) (uuid.UUID, error) {
+			returnStore: func(model pkg.UserModel) (uuid.UUID, error) {
 				t.Fatal("this should not have been called")
 				return model.ID, nil
 			},
@@ -118,10 +113,10 @@ func TestSignUpHandler(t *testing.T) {
 			name: "success registration",
 			want: 201,
 			body: body,
-			returnFunc: func() domain.UserModel {
-				return domain.UserModel{}
+			returnFunc: func() pkg.UserModel {
+				return pkg.UserModel{}
 			},
-			returnStore: func(model domain.UserModel) (uuid.UUID, error) {
+			returnStore: func(model pkg.UserModel) (uuid.UUID, error) {
 				return model.ID, nil
 			},
 		},
@@ -161,11 +156,11 @@ func TestLoginHandler(t *testing.T) {
 
 	mockRep := &_mockUserRepoStorage{}
 	// we are not stubbing
-	tokenizer, err := authtoken.NewJWT(rsaPrK, rsaPuK, "test", "ankur", 5)
+	tokenizer, err := pkg.NewJWT(rsaPrK, rsaPuK, "test", "ankur", 5)
 	if err != nil {
 		t.Fatal(err)
 	}
-	a := auth{logger: l, svc: domain.NewRegAndAuthService(mockRep), tokenizer: tokenizer}
+	a := auth{logger: l, svc: pkg.NewRegAndAuthService(mockRep), tokenizer: tokenizer}
 
 	user := loginForm{
 		EmailID:  "ankur@example.com",
@@ -180,20 +175,18 @@ func TestLoginHandler(t *testing.T) {
 		name        string
 		want        int
 		body        []byte
-		returnFunc  func() domain.UserModel
-		returnStore func(model domain.UserModel) (uuid.UUID, error)
+		returnFunc  func() pkg.UserModel
+		returnStore func(model pkg.UserModel) (uuid.UUID, error)
 	}{
 		{
 			name: "empty body json unmarshalling err",
 			want: 400,
 			body: nil,
-			returnFunc: func() domain.UserModel {
+			returnFunc: func() pkg.UserModel {
 				t.Fatal("this should not have been called")
-				return domain.UserModel{
-					Email: "ankur@example.com",
-				}
+				return pkg.UserModel{}
 			},
-			returnStore: func(model domain.UserModel) (uuid.UUID, error) {
+			returnStore: func(model pkg.UserModel) (uuid.UUID, error) {
 				t.Fatal("this should not have been called")
 				return model.ID, nil
 			},
@@ -202,13 +195,13 @@ func TestLoginHandler(t *testing.T) {
 			name: "wrong password",
 			want: 422,
 			body: body,
-			returnFunc: func() domain.UserModel {
-				return domain.UserModel{
+			returnFunc: func() pkg.UserModel {
+				return pkg.UserModel{
 					Email:    "ankur@example.com",
 					Password: string(wrongPassEncrypt),
 				}
 			},
-			returnStore: func(model domain.UserModel) (uuid.UUID, error) {
+			returnStore: func(model pkg.UserModel) (uuid.UUID, error) {
 				t.Fatal("this should not have been called")
 				return model.ID, nil
 			},
@@ -217,13 +210,13 @@ func TestLoginHandler(t *testing.T) {
 			name: "success login",
 			want: 201,
 			body: body,
-			returnFunc: func() domain.UserModel {
-				return domain.UserModel{
+			returnFunc: func() pkg.UserModel {
+				return pkg.UserModel{
 					Email:    "ankur@example.com",
 					Password: string(encryptedPass),
 				}
 			},
-			returnStore: func(model domain.UserModel) (uuid.UUID, error) {
+			returnStore: func(model pkg.UserModel) (uuid.UUID, error) {
 				t.Fatal("this should not have been called")
 				return model.ID, nil
 			},

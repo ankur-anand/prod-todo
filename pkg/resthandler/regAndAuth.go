@@ -1,4 +1,4 @@
-package rest
+package resthandler
 
 import (
 	"encoding/json"
@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/ankur-anand/prod-todo/pkg/domain"
+	"github.com/ankur-anand/prod-todo/pkg"
 	"github.com/ankur-anand/prod-todo/pkg/logger"
 )
 
@@ -47,9 +47,9 @@ type Tokenizer interface {
 }
 
 // auth encapsulates various types of handlerFunc
-// that responds to various domain api request
+// that responds to various model api request
 type auth struct {
-	svc       domain.RegAndAuthService
+	svc       pkg.RegAndAuthService
 	logger    *logger.Logger
 	tokenizer Tokenizer
 }
@@ -123,7 +123,7 @@ func (ar auth) signUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user := domain.UserModel{
+	user := pkg.UserModel{
 		Email:     signForm.EmailID,
 		Password:  signForm.Password,
 		FirstName: signForm.FirstName,

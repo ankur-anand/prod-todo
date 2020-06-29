@@ -1,4 +1,4 @@
-package domain
+package model
 
 import (
 	"context"
@@ -39,14 +39,30 @@ type UserIterator interface {
 	User() UserModel
 }
 
+// TodoFilter tells what kind of filter to apply on queries
+type TodoFilter int8
+
+const (
+	// NilFilter rule suggests no filter should be applied on the query
+	NilFilter TodoFilter = iota
+	// Finished rule to filter all the Finished=True Todo
+	Finished
+	// UnFinished rule to filter all the Finished=False Todo
+	UnFinished
+)
+
 // TodoRepository define a contract for storage, to interact
 // with the Todo Model.
 type TodoRepository interface {
-	Find(ctx context.Context, id uuid.UUID) (TodoModel, error)
-	FindAll(ctx context.Context, userID uuid.UUID) (TodoIterator, error)
-	Update(ctx context.Context, todo TodoModel) error
-	Store(ctx context.Context, todo TodoModel) (uuid.UUID, error)
-	Delete(ctx context.Context, id uuid.UUID) error
+	FindOneTodo(ctx context.Context, id uuid.UUID) (TodoModel, error)
+	FindAllTodoOfUser(ctx context.Context, userID uuid.UUID, filter TodoFilter) (TodoIterator, error)
+	FindAllByFilter(ctx context.Context, filter TodoFilter) (TodoIterator, error)
+	UpdateOne(ctx context.Context, todo TodoModel) error
+	UpdateMany(ctx context.Context, todo []*TodoModel) error
+	InsertOne(ctx context.Context, todo TodoModel) (uuid.UUID, error)
+	InsertMany(ctx context.Context, todo []*TodoModel) (uuid.UUID, error)
+	DeleteOne(ctx context.Context, id uuid.UUID) error
+	DeleteMany(ctx context.Context, id []uuid.UUID) error
 }
 
 // TodoIterator is implemented by type that can iterate the Todo List.

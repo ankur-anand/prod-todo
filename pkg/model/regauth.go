@@ -1,4 +1,4 @@
-package domain
+package model
 
 import (
 	"context"
@@ -28,7 +28,7 @@ func normalize(email string) string {
 }
 
 // RegAndAuthService provides the use cases implementation to work
-// with the entities of the underlying domain during
+// with the entities of the underlying model during
 // SignIn and SignUP
 type RegAndAuthService struct {
 	repo UserRepository

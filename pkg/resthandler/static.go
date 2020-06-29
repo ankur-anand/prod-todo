@@ -1,4 +1,4 @@
-package rest
+package resthandler
 
 import (
 	"net/http"
@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	homeRouteStaticResponse = []byte(`{"message": "hello world from rest svc"}`)
+	homeRouteStaticResponse = []byte(`{"message": "hello world from resthandler svc"}`)
 	healthiest              = []byte(`{"alive": true}`)
 )
 

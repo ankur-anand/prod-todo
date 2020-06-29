@@ -1,6 +1,6 @@
 // +build unit_tests all_tests
 
-package rest
+package resthandler
 
 import (
 	"net/http"

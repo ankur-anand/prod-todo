@@ -1,4 +1,4 @@
-package domain
+package model
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 )
 
 // TodoService provides the use cases implementation to work
-// with the entities of the underlying domain during
+// with the entities of the underlying model during
 // Todo create and update
 type TodoService struct {
 	repo TodoRepository

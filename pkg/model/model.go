@@ -1,4 +1,4 @@
-package domain
+package model
 
 import "github.com/google/uuid"
 
@@ -21,9 +21,9 @@ type UserModel struct {
 
 // TodoModel is each single individual task
 type TodoModel struct {
-	Id       uuid.UUID
-	UserID   uuid.UUID
 	Title    string
 	Content  string
+	ID       uuid.UUID
+	UserID   uuid.UUID
 	Finished bool
 }
