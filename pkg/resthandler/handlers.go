@@ -6,7 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ankur-anand/prod-todo/pkg/logger"
+	"go.uber.org/zap"
+
 	"github.com/gorilla/mux"
 )
 
@@ -21,14 +22,14 @@ var (
 
 // MuxHandler is a Handler that responds to an HTTP request.
 type MuxHandler struct {
-	log           *logger.Logger
+	log           *zap.Logger
 	regAndAuth    auth
 	staticHandler staticHandler
 	router        *mux.Router
 }
 
 // NewMuxHandler returns an initialized http.Handler
-func NewMuxHandler(logger *logger.Logger) *MuxHandler {
+func NewMuxHandler(logger *zap.Logger) *MuxHandler {
 	mh := MuxHandler{
 		staticHandler: newStaticHandler(logger),
 		log:           logger,
@@ -74,17 +75,17 @@ func (mh *MuxHandler) initializeRoutes() {
 }
 
 // httpReqField is an helper method to build logger filed from an HTTPRequest
-func httpReqField(statusCode int, r *http.Request, err error) []logger.Field {
-	field := []logger.Field{
-		logger.String("method", r.Method),
-		logger.String("url", r.URL.String()),
-		logger.Int("status", statusCode),
-		logger.Duration("duration", durationFromReqCtx(r)),
+func httpReqField(statusCode int, r *http.Request, err error) []zap.Field {
+	field := []zap.Field{
+		zap.String("method", r.Method),
+		zap.String("url", r.URL.String()),
+		zap.Int("status", statusCode),
+		zap.Duration("duration", durationFromReqCtx(r)),
 	}
 	if err == nil {
 		return field
 	}
-	field = append(field, logger.Error(err))
+	field = append(field, zap.Error(err))
 	return field
 }
 
@@ -93,17 +94,17 @@ func durationFromReqCtx(r *http.Request) time.Duration {
 	return time.Since(startTime)
 }
 
-func writeInternalServerError(w http.ResponseWriter, l *logger.Logger) {
+func writeInternalServerError(w http.ResponseWriter, l *zap.Logger) {
 	code := http.StatusInternalServerError
 	w.WriteHeader(code)
 	_, err := w.Write(someThingWentWrong)
 	if err != nil {
-		l.Error("writing to the response writer failed", logger.Error(err))
+		l.Error("writing to the response writer failed", zap.Error(err))
 	}
 }
 
-func checkResponseWriteErr(err error, l *logger.Logger) {
+func checkResponseWriteErr(err error, l *zap.Logger) {
 	if err != nil {
-		l.Error("response writer err", logger.Error(err))
+		l.Error("response writer err", zap.Error(err))
 	}
 }

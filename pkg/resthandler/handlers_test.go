@@ -12,7 +12,7 @@ import (
 
 func TestMuxHandler_ServeHTTP(t *testing.T) {
 	t.Parallel()
-	l, _ := logger.NewTesting(nil)
+	l := logger.NewTesting(nil)
 	defer l.Sync()
 	mux := NewMuxHandler(l)
 

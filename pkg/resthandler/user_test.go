@@ -28,7 +28,7 @@ func (t testTokenizer) Generate(id string) (string, error) {
 
 func TestSignUpHandler(t *testing.T) {
 	t.Parallel()
-	l, _ := logger.NewTesting(nil)
+	l := logger.NewTesting(nil)
 	defer l.Sync()
 	mockRep := &_mockUserRepoStorage{}
 	a := auth{logger: l, svc: pkg.NewRegAndAuthService(mockRep)}
@@ -110,7 +110,7 @@ func TestSignUpHandler(t *testing.T) {
 
 func TestLoginHandler(t *testing.T) {
 	t.Parallel()
-	l, _ := logger.NewTesting(nil)
+	l := logger.NewTesting(nil)
 	defer l.Sync()
 	password := "ankuranand"
 	encryptedPass, err := bcrypt.GenerateFromPassword([]byte(password),

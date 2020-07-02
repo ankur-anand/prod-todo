@@ -3,7 +3,7 @@ package resthandler
 import (
 	"net/http"
 
-	"github.com/ankur-anand/prod-todo/pkg/logger"
+	"go.uber.org/zap"
 )
 
 var (
@@ -12,10 +12,10 @@ var (
 )
 
 type staticHandler struct {
-	logger *logger.Logger
+	logger *zap.Logger
 }
 
-func newStaticHandler(logger *logger.Logger) staticHandler {
+func newStaticHandler(logger *zap.Logger) staticHandler {
 	sh := staticHandler{logger: logger}
 	return sh
 }

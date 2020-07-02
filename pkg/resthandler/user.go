@@ -6,8 +6,9 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"go.uber.org/zap"
+
 	"github.com/ankur-anand/prod-todo/pkg"
-	"github.com/ankur-anand/prod-todo/pkg/logger"
 )
 
 var (
@@ -50,7 +51,7 @@ type Tokenizer interface {
 // that responds to various model api request
 type auth struct {
 	svc       pkg.RegAndAuthService
-	logger    *logger.Logger
+	logger    *zap.Logger
 	tokenizer Tokenizer
 }
 
@@ -72,7 +73,7 @@ func (ar auth) signUp(w http.ResponseWriter, r *http.Request) {
 	defer func() {
 		err := r.Body.Close()
 		if err != nil {
-			ar.logger.Error("err closing underlying stream", logger.Error(err))
+			ar.logger.Error("err closing underlying stream", zap.Error(err))
 		}
 	}()
 
@@ -160,7 +161,7 @@ func (ar auth) login(w http.ResponseWriter, r *http.Request) {
 	defer func() {
 		err := r.Body.Close()
 		if err != nil {
-			ar.logger.Error("err closing underlying stream", logger.Error(err))
+			ar.logger.Error("err closing underlying stream", zap.Error(err))
 		}
 	}()
 

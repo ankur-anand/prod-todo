@@ -12,7 +12,7 @@ import (
 
 func TestStaticHandler_Home(t *testing.T) {
 	t.Parallel()
-	l, _ := logger.NewTesting(nil)
+	l := logger.NewTesting(nil)
 	defer l.Sync()
 	req := httptest.NewRequest("GET", "/", nil)
 	rr := httptest.NewRecorder()
@@ -34,7 +34,7 @@ func TestStaticHandler_Home(t *testing.T) {
 
 func TestStaticHandler_HealthAliveness(t *testing.T) {
 	t.Parallel()
-	l, _ := logger.NewTesting(nil)
+	l := logger.NewTesting(nil)
 	defer l.Sync()
 	req := httptest.NewRequest("GET", "/health/live", nil)
 	rr := httptest.NewRecorder()
