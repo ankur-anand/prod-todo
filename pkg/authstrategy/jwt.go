@@ -1,4 +1,4 @@
-package authstrategy
+package pkg
 
 import (
 	"crypto/rsa"

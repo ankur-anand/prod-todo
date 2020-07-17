@@ -10,8 +10,9 @@ import (
 	"testing"
 
 	"github.com/ankur-anand/prod-todo/pkg"
-	"github.com/ankur-anand/prod-todo/pkg/logger"
 	"github.com/google/uuid"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zaptest"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -28,7 +29,7 @@ func (t testTokenizer) Generate(id string) (string, error) {
 
 func TestSignUpHandler(t *testing.T) {
 	t.Parallel()
-	l := logger.NewTesting(nil)
+	l := zaptest.NewLogger(t, zaptest.Level(zap.FatalLevel))
 	defer l.Sync()
 	mockRep := &_mockUserRepoStorage{}
 	a := auth{logger: l, svc: pkg.NewRegAndAuthService(mockRep)}
@@ -110,7 +111,7 @@ func TestSignUpHandler(t *testing.T) {
 
 func TestLoginHandler(t *testing.T) {
 	t.Parallel()
-	l := logger.NewTesting(nil)
+	l := zaptest.NewLogger(t, zaptest.Level(zap.FatalLevel))
 	defer l.Sync()
 	password := "ankuranand"
 	encryptedPass, err := bcrypt.GenerateFromPassword([]byte(password),

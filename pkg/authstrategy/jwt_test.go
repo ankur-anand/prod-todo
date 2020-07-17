@@ -1,4 +1,4 @@
-package authstrategy
+package pkg
 
 import (
 	"crypto/rsa"
@@ -6,8 +6,6 @@ import (
 	"log"
 	"os"
 	"testing"
-
-	"github.com/ankur-anand/prod-todo/pkg/authtoken"
 
 	"github.com/dgrijalva/jwt-go/v4"
 )
@@ -50,7 +48,7 @@ func TestMain(m *testing.M) {
 
 func TestJWT_Generate(t *testing.T) {
 	t.Parallel()
-	nJwt, err := authtoken.NewJWT(rsaPrK, rsaPuK, "test", "ankur", 5)
+	nJwt, err := NewJWT(rsaPrK, rsaPuK, "test", "ankur", 5)
 	if err != nil {
 		t.Error(err)
 	}
@@ -63,7 +61,7 @@ func TestJWT_Generate(t *testing.T) {
 func TestJWT_Validate(t *testing.T) {
 	t.Parallel()
 	userID := "randomUUUID"
-	nJwt, err := authtoken.NewJWT(rsaPrK, rsaPuK, "test", "ankur", 5)
+	nJwt, err := NewJWT(rsaPrK, rsaPuK, "test", "ankur", 5)
 	if err != nil {
 		t.Error(err)
 	}
@@ -82,7 +80,7 @@ func TestJWT_Validate(t *testing.T) {
 
 func BenchmarkJWT_Validate(b *testing.B) {
 	userID := "randomUUUID"
-	nJwt, err := authtoken.NewJWT(rsaPrK, rsaPuK, "test", "ankur", 5)
+	nJwt, err := NewJWT(rsaPrK, rsaPuK, "test", "ankur", 5)
 	if err != nil {
 		b.Error(err)
 	}

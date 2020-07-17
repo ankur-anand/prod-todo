@@ -7,12 +7,13 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/ankur-anand/prod-todo/pkg/logger"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zaptest"
 )
 
 func TestStaticHandler_Home(t *testing.T) {
 	t.Parallel()
-	l := logger.NewTesting(nil)
+	l := zaptest.NewLogger(t, zaptest.Level(zap.FatalLevel))
 	defer l.Sync()
 	req := httptest.NewRequest("GET", "/", nil)
 	rr := httptest.NewRecorder()
@@ -34,7 +35,7 @@ func TestStaticHandler_Home(t *testing.T) {
 
 func TestStaticHandler_HealthAliveness(t *testing.T) {
 	t.Parallel()
-	l := logger.NewTesting(nil)
+	l := zaptest.NewLogger(t, zaptest.Level(zap.FatalLevel))
 	defer l.Sync()
 	req := httptest.NewRequest("GET", "/health/live", nil)
 	rr := httptest.NewRecorder()

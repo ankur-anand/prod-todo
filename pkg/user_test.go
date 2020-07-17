@@ -25,10 +25,6 @@ func (d dummyRepo) FindByEmail(ctx context.Context,
 	return d.returnFunc(), nil
 }
 
-func (d dummyRepo) FindAll(ctx context.Context) (UserIterator, error) {
-	panic("implement me")
-}
-
 func (d dummyRepo) Update(ctx context.Context, user UserModel) error {
 	panic("implement me")
 }

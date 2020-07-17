@@ -23,7 +23,7 @@ func (m *_mockUserRepoStorage) FindByEmail(ctx context.Context, email string) (p
 	return m.returnFunc(), nil
 }
 
-func (m *_mockUserRepoStorage) FindAll(ctx context.Context) (pkg.UserIterator, error) {
+func (m *_mockUserRepoStorage) FindAll(ctx context.Context) ([]pkg.UserModel, error) {
 	panic("implement me")
 }
 

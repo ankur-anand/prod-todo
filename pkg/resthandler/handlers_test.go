@@ -7,13 +7,13 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/ankur-anand/prod-todo/pkg/logger"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zaptest"
 )
 
 func TestMuxHandler_ServeHTTP(t *testing.T) {
 	t.Parallel()
-	l := logger.NewTesting(nil)
-	defer l.Sync()
+	l := zaptest.NewLogger(t, zaptest.Level(zap.FatalLevel))
 	mux := NewMuxHandler(l)
 
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
