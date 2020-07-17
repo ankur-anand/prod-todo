@@ -16,9 +16,7 @@ import (
 	"time"
 
 	"github.com/ankur-anand/prod-todo/pkg/storage"
-
-	"github.com/ankur-anand/prod-todo/pkg/storage/auths/testsuite"
-
+	"github.com/ankur-anand/prod-todo/pkg/storage/testsuite"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
@@ -114,7 +112,7 @@ func TestMain(m *testing.M) {
 	// migrate
 	_, filename, _, _ := runtime.Caller(0)
 	fDirName := filepath.Dir(filename)
-	migrationDir := filepath.Join(fDirName, "migrations")
+	migrationDir := filepath.Join(fDirName, "postgres", "migrations")
 	sourceURL := fmt.Sprintf("file://%s", migrationDir)
 	db, err := sql.Open("postgres", pgURL.String())
 	if err != nil {
@@ -155,21 +153,28 @@ func TestMain(m *testing.M) {
 
 func TestFindAndStore(t *testing.T) {
 	t.Parallel()
-	suiteBase := &testsuite.SuiteBase{}
-	suiteBase.SetRepo(repo.AuthSQL())
+	suiteBase := &testsuite.UserSuiteBase{}
+	suiteBase.SetRepo(repo.UserStorageSQL())
 	suiteBase.TestFindAndStore(t)
 }
 
 func TestFindByEmailAndStore(t *testing.T) {
 	t.Parallel()
-	suiteBase := &testsuite.SuiteBase{}
-	suiteBase.SetRepo(repo.AuthSQL())
+	suiteBase := &testsuite.UserSuiteBase{}
+	suiteBase.SetRepo(repo.UserStorageSQL())
 	suiteBase.TestFindByEmailAndStore(t)
 }
 
 func TestDuplicateEmailStorePqSQL(t *testing.T) {
 	t.Parallel()
-	suiteBase := &testsuite.SuiteBase{}
-	suiteBase.SetRepo(repo.AuthSQL())
+	suiteBase := &testsuite.UserSuiteBase{}
+	suiteBase.SetRepo(repo.UserStorageSQL())
 	suiteBase.TestDuplicateEmailStorePqSQL(t)
+}
+
+func TestUserUpdateStorePqSQL(t *testing.T) {
+	t.Parallel()
+	suiteBase := &testsuite.UserSuiteBase{}
+	suiteBase.SetRepo(repo.UserStorageSQL())
+	suiteBase.TestUpdateUserPqSQL(t)
 }

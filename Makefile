@@ -46,3 +46,4 @@ lint-check-deps:
 		echo "[go get] installing golangci-lint";\
 		go get -u github.com/golangci/golangci-lint/cmd/golangci-lint;\
 	fi
+

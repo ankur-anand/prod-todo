@@ -7,3 +7,8 @@ cli/migrate
 vendor/
 .vscode/
 .idea/
+.playground
+*.out
+*.test
+*.telemetry
+*.idea

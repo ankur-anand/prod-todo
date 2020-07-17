@@ -10,6 +10,30 @@ import (
 )
 
 var (
+	// NilUserModel is empty UserModel, all zeros
+	NilUserModel UserModel
+)
+
+// UserModel represents individual user registered in the system
+type UserModel struct {
+	ID        uuid.UUID
+	Email     string
+	Password  string
+	FirstName string
+	LastName  string
+	Username  string
+}
+
+// UserStorage define a contract for storage, to interact
+// with the UserModel.
+type UserStorage interface {
+	Find(ctx context.Context, id uuid.UUID) (UserModel, error)
+	FindByEmail(ctx context.Context, email string) (UserModel, error)
+	Update(ctx context.Context, user UserModel) error
+	Store(ctx context.Context, user UserModel) (uuid.UUID, error)
+}
+
+var (
 	rxEmail = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 )
 
