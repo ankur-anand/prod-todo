@@ -7,8 +7,8 @@ import (
 )
 
 var (
-	homeRouteStaticResponse = []byte(`{"message": "hello world from resthandler svc"}`)
-	healthiest              = []byte(`{"alive": true}`)
+	homeRouteStaticResponse = getRespMsg("hello world from todo rest svc")
+	healthiest              = getJSONResp(`{"alive": true}`)
 )
 
 type staticHandler struct {

@@ -5,6 +5,7 @@ package resthandler
 import (
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"go.uber.org/zap"
@@ -26,8 +27,8 @@ func TestStaticHandler_Home(t *testing.T) {
 			status, http.StatusOK)
 	}
 
-	expected := `{"message": "hello world from resthandler svc"}`
-	if rr.Body.String() != expected {
+	expected := `{"message": "hello world from todo rest svc"}`
+	if !strings.Contains(rr.Body.String(), expected) {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rr.Body.String(), expected)
 	}
@@ -49,7 +50,7 @@ func TestStaticHandler_HealthAliveness(t *testing.T) {
 	}
 
 	expected := `{"alive": true}`
-	if rr.Body.String() != expected {
+	if !strings.Contains(rr.Body.String(), expected) {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rr.Body.String(), expected)
 	}

@@ -12,33 +12,34 @@ import (
 )
 
 var (
-	invalidJSON = []byte(`{"status": "ERROR", 
-	"error": {"message": "invalid request.", "kind": "APIException"}`)
+	// failure msg
+	errInvalidJSON         = getAPIErrMsg("Invalid request.")
+	errInvalidEmailAddress = getAPIErrMsg("Invalid email address.")
+	errInvalidPassword     = getAPIErrMsg("Invalid Password Length should be > 8 and < 254.")
+	errInvalidCredential   = getAPIErrMsg("Invalid credentials.")
+	errDuplicateReg        = getAPIErrMsg("Email ID already registered.")
 
-	invalidEmailAddress = []byte(`{"status": "ERROR", 
-	"error": {"message": "invalid email address.", 
-    "kind": "APIException"}`)
-
-	invalidPassword = []byte(`{"status": "ERROR", 
-	"error": {"message": "invalid Password Length should be > 8 and < 254.", 
-    "kind": "APIException"}`)
-
-	userAlreadyRegistered = []byte(`{"status": "ERROR", 
-	"error": {"message": "email id already registered.", 
-    "kind": "APIException"}`)
-
-	userCreated = []byte(`{"status": "SUCCESS", 
-	"success": {"message": "email registered.", 
-    "kind": "APISuccess"}`)
-
-	invalidCredential = []byte(`{"status": "SUCCESS", 
-	"success": {"message": "invalid credentials.", 
-    "kind": "APIException"}`)
-
-	tokenString = `{"status": "SUCCESS", 
-	"success": {"message": "%s", 
-    "kind": "APISuccess"}`
+	// successMsg
+	rspUsrReg   = getRespMsg("Email successfully registered.")
+	tokenString = `{"message": "User logged in successfully", data: {token: %s}}`
 )
+
+// follow sort of https://jsonapi.org/format/
+func getAPIErrMsg(m string) []byte {
+	return []byte(fmt.Sprintf(`{"success": "false", 
+	"errors": [{"message": "%s""}]}`, m))
+}
+
+// follow sort of https://jsonapi.org/format/
+func getRespMsg(m string) []byte {
+	return []byte(fmt.Sprintf(`{"success": "true", 
+	"data": {"message": "%s"}}`, m))
+}
+
+func getJSONResp(jsonM string) []byte {
+	return []byte(fmt.Sprintf(`{"success": "true", 
+	"data": %s}`, jsonM))
+}
 
 // Tokenizer provide an abstraction to work with
 // Validation and Generation of an Auth Token
@@ -91,7 +92,7 @@ func (ar auth) signUp(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		code = http.StatusBadRequest
 		w.WriteHeader(code)
-		_, err = w.Write(invalidJSON)
+		_, err = w.Write(errInvalidJSON)
 		checkResponseWriteErr(err, ar.logger)
 
 		ar.logger.Error("err unmarshalling json", httpReqField(code, r, err)...)
@@ -117,7 +118,7 @@ func (ar auth) signUp(w http.ResponseWriter, r *http.Request) {
 	if ok {
 		code = http.StatusConflict
 		w.WriteHeader(code)
-		_, err = w.Write(userAlreadyRegistered)
+		_, err = w.Write(errDuplicateReg)
 		checkResponseWriteErr(err, ar.logger)
 
 		ar.logger.Error("email already registered", httpReqField(code, r, err)...)
@@ -140,7 +141,7 @@ func (ar auth) signUp(w http.ResponseWriter, r *http.Request) {
 
 	code = http.StatusCreated
 	w.WriteHeader(code)
-	_, err = w.Write(userCreated)
+	_, err = w.Write(rspUsrReg)
 	checkResponseWriteErr(err, ar.logger)
 
 	ar.logger.Info("user created", httpReqField(code, r, err)...)
@@ -179,7 +180,7 @@ func (ar auth) login(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		code = http.StatusBadRequest
 		w.WriteHeader(code)
-		_, err = w.Write(invalidJSON)
+		_, err = w.Write(errInvalidJSON)
 		checkResponseWriteErr(err, ar.logger)
 
 		ar.logger.Error("err unmarshalling json", httpReqField(code, r, err)...)
@@ -203,7 +204,7 @@ func (ar auth) login(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		code = http.StatusUnprocessableEntity
 		w.WriteHeader(code)
-		_, err = w.Write(invalidCredential)
+		_, err = w.Write(errInvalidCredential)
 		checkResponseWriteErr(err, ar.logger)
 		ar.logger.Error("invalid Credential", httpReqField(code, r, err)...)
 		return
@@ -217,11 +218,11 @@ func (ar auth) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resJSON := fmt.Sprintf(tokenString, token)
+	resJSON := getJSONResp(fmt.Sprintf(tokenString, token))
 
 	code = http.StatusCreated
 	w.WriteHeader(code)
-	_, err = w.Write([]byte(resJSON))
+	_, err = w.Write(resJSON)
 	checkResponseWriteErr(err, ar.logger)
 
 	ar.logger.Info("user logged in", httpReqField(code, r, err)...)
@@ -232,7 +233,7 @@ func (ar auth) precondition(w http.ResponseWriter, email, password string) (code
 	if !ar.svc.IsValidEmail(email) {
 		code = http.StatusPreconditionFailed
 		w.WriteHeader(code)
-		_, err = w.Write(invalidEmailAddress)
+		_, err = w.Write(errInvalidEmailAddress)
 		checkResponseWriteErr(err, ar.logger)
 		return
 	}
@@ -240,7 +241,7 @@ func (ar auth) precondition(w http.ResponseWriter, email, password string) (code
 	if !ar.svc.IsValidPassword(password) {
 		code = http.StatusPreconditionFailed
 		w.WriteHeader(code)
-		_, err = w.Write(invalidPassword)
+		_, err = w.Write(errInvalidPassword)
 		checkResponseWriteErr(err, ar.logger)
 
 		return
